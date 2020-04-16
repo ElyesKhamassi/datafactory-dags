@@ -78,6 +78,8 @@ t3 = BashOperator(
     dag=dag,
 )
 
+fr_mess = """{"sourcePattern": "CBQ.RAW_DATA.BASE_ELIGIBILITE","xID": "10" }"""
+
 filereceiver = LongHttpJobOperator(
     task_id='call_filereceiver',
     http_conn_id='socle-filereceiver-url',

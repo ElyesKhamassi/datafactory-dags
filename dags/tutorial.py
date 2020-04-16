@@ -1,3 +1,7 @@
+# Test plugin
+import Sfdc2Plugin
+from Sfdc2Plugin import LongHttpJobOperator
+
 from datetime import timedelta
 # The DAG object; we'll need this to instantiate a DAG
 from airflow import DAG
@@ -75,4 +79,18 @@ t3 = BashOperator(
     dag=dag,
 )
 
-t1 >> [t2, t3]
+filereceiver = LongHttpJobOperator(
+    task_id='call_filereceiver',
+    http_conn_id='socle-filereceiver-url',
+    method='POST',
+    data=fr_mess,
+    endpoint='/receive',
+    endpointAsync='/callback',
+    headers={"Content-Type": "application/json", "timeout":"600"},
+    response_check=lambda response: response.status_code == 202,
+    response_check_callback=lambda response: response.status == "DONE",
+    dag=dag
+)
+
+
+t1 >> filereceiver >> [t2, t3] 

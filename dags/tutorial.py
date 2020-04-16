@@ -1,6 +1,5 @@
 # Test plugin
-import Sfdc2Plugin
-from Sfdc2Plugin import LongHttpJobOperator
+from sfdc2_plugin import LongHttpJobOperator
 
 from datetime import timedelta
 # The DAG object; we'll need this to instantiate a DAG

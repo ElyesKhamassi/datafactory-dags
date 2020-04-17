@@ -1,1 +1,2 @@
 apache-airflow[google_auth]==1.10.10
+Flask-OAuthlib==0.9.5

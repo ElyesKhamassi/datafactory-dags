@@ -44,6 +44,7 @@ class LongHttpJobOperator(BaseOperator):
     def __init__(self,
                  endpoint,
                  endpointAsync,
+                 api_key,
                  method='POST',
                  data=None,
                  headers=None,
@@ -70,16 +71,19 @@ class LongHttpJobOperator(BaseOperator):
         self.extra_options = extra_options or {}
         self.xcom_push_flag = xcom_push
         self.log_response = log_response
+        self.api_key = api_key
 
     def execute(self, context):
         http = HttpHook(self.method, http_conn_id=self.http_conn_id)
         self.log.info("data :" + self.jobId)
+        self.log.info("api_key : " + self.api_key)
         self.log.info("Calling HTTP method")
-        response = http.run(self.endpoint,
+        response = http.run(self.endpoint+"?api_key=" + self.api_key,
                               self.data,
                               self.headers,
-                              self.extra_options)
+                              None)
         self.log.info("Launch job call status : " + str(response.status_code))
+        self.log.info("Response : " + str(response.text))
 
         if self.response_check:
             if not self.response_check(response):
@@ -96,7 +100,7 @@ class LongHttpJobOperator(BaseOperator):
 
         time.sleep(eta)
         while True:
-            respCallback = httpCallback.run(self.endpointAsync+"/"+job,
+            respCallback = httpCallback.run(self.endpointAsync+"/"+job+"?api_key=" + self.api_key,
                               None,
                               self.headers,
                               self.extra_options)
